@@ -5,11 +5,15 @@ import Cart from './features/cart/Cart';
 import CreateOrder from './features/order/CreateOrder';
 import Order from './features/order/Order';
 import AppLayout from './ui/AppLayout';
+import Error from './ui/Error';
 
 const router = createBrowserRouter([
   {
     // AppLayout component wraps all the child routes
     element: <AppLayout />,
+    errorElement: <Error />, // This specifies the error component for the AppLayout route
+    // Each route can have an errorElement which specifies a component to render when an error occurs during the navigation to that route or while loading data for that route.
+    // The errorElement for AppLayout applies to all child routes unless they have their own errorElement.
     children: [
       {
         path: '/',
@@ -19,6 +23,8 @@ const router = createBrowserRouter([
         path: '/menu',
         element: <Menu />,
         loader: menuLoader, // Use menuLoader to load data before rendering Menu component
+        errorElement: <Error />, // This specifies the error component for the Menu route
+        // The errorElement for the /menu route specifies that the Error component should be displayed if there is an error loading the Menu component or its data.
       },
       {
         path: '/cart',
