@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, redirect } from 'react-router-dom';
+import { Form, redirect, useActionData, useNavigation } from 'react-router-dom';
 import { createOrder } from '../../services/apiRestaurant';
 
 // Function to validate phone numbers using regex
@@ -34,6 +34,13 @@ const fakeCart = [
 // This component renders a form to create a new order.
 // It uses the react-router-dom Form component to handle form submission.
 function CreateOrder() {
+  const navigation = useNavigation();
+
+  // useActionData is a hook provided by react-router-dom that allows components to access the data returned by an action function.
+  // In this context, we use useActionData to get the validation errors returned by the action function and display them in the form.
+  const formErrors = useActionData(); // This hook allows us to access the data returned from the action function
+
+  const isSubmitting = navigation.state === 'submitting';
   const cart = fakeCart;
 
   return (
@@ -44,22 +51,24 @@ function CreateOrder() {
         <div>
           <label>
             name
-            <input type='text' name='customer' />
+            <input type='text' name='customer' required />
           </label>
         </div>
         {/*  */}
         <div>
           <label>
             phone
-            <input type='tel' name='phone' />
+            <input type='tel' name='phone' required />
           </label>
+          {/* Display the phone error message if it exists */}
+          {formErrors?.phone && <p>{formErrors.phone}</p>}
         </div>
         {/*  */}
 
         <div>
           <label>
             address
-            <input type='text' name='address' />
+            <input type='text' name='address' required />
           </label>
         </div>
         {/*  */}
@@ -73,7 +82,7 @@ function CreateOrder() {
         <div>
           {/* Hidden input to send cart data as a JSON string */}
           <input type='hidden' name='cart' value={JSON.stringify(cart)} />
-          <button>order now!</button>
+          <button disabled={isSubmitting}>{isSubmitting ? 'Placing order...' : 'order now'}</button>
         </div>
       </Form>
     </div>
@@ -93,9 +102,20 @@ export async function action({ request }) {
   const order = { ...data, cart: JSON.parse(data.cart), priority: data.priority === 'on' };
   console.log(order);
 
+  // Initialize an empty object to hold any validation errors
+  const errors = {};
+
+  // Validate the phone number using the isValidPhone function
+  // If it's not valid, an error message is added to the errors object.
+  if (!isValidPhone(order.phone)) errors.phone = 'Please enter a valid phone number!';
+
+  // If there are any validation errors, it returns the errors object, stopping the form submission and allowing the component to handle the errors.
+  if (Object.keys(errors).length > 0) return errors;
+
+  // If there are no validation errors
   // Send the order data to the server to create a new order
-  const newOrder = await createOrder(order);
   // The server returns the newly created order object
+  const newOrder = await createOrder(order);
 
   // Redirect the user to the new order's detail page
   return redirect(`/order/${newOrder.id}`);
