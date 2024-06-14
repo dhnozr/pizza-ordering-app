@@ -2,7 +2,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Home from './ui/Home';
 import Menu, { loader as menuLoader } from './features/menu/Menu';
 import Cart from './features/cart/Cart';
-import CreateOrder from './features/order/CreateOrder';
+import CreateOrder, { action as createOrderAction } from './features/order/CreateOrder';
 import Order, { loader as orderLoader } from './features/order/Order';
 import AppLayout from './ui/AppLayout';
 import Error from './ui/Error';
@@ -33,6 +33,7 @@ const router = createBrowserRouter([
       {
         path: '/order/new',
         element: <CreateOrder />,
+        action: createOrderAction,
       },
       {
         // Route for viewing the details of a specific order
@@ -42,7 +43,7 @@ const router = createBrowserRouter([
         // the Order component will be rendered, and it will have access to the orderId parameter
         element: <Order />, // Render Order component when path matches '/order/:orderId'
         errorElement: <Error />,
-        loader: orderLoader,
+        loader: orderLoader, // Use orderLoader to load data before rendering Order component
       },
     ],
   },

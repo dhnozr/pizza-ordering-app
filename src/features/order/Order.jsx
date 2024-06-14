@@ -18,9 +18,9 @@ function Order() {
 
 export default Order;
 
+// This loader function is used to fetch the details of an order based on the orderId parameter.
+// The orderId parameter is extracted from the URL and passed to the getOrder function to fetch the order details.
 export async function loader({ params }) {
-  // react loader can get accees params object and use it here to fetch ordered id
-  // params.orderId is coming from the app whic we specefice "/order/:orderID" name can be diffrent then also here name would have changed
   const order = await getOrder(params.orderId);
   return order;
 }
