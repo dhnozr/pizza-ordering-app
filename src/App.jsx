@@ -3,7 +3,7 @@ import Home from './ui/Home';
 import Menu, { loader as menuLoader } from './features/menu/Menu';
 import Cart from './features/cart/Cart';
 import CreateOrder from './features/order/CreateOrder';
-import Order from './features/order/Order';
+import Order, { loader as orderLoader } from './features/order/Order';
 import AppLayout from './ui/AppLayout';
 import Error from './ui/Error';
 
@@ -41,6 +41,8 @@ const router = createBrowserRouter([
         // When the user navigates to a URL matching this pattern (e.g., '/order/123'),
         // the Order component will be rendered, and it will have access to the orderId parameter
         element: <Order />, // Render Order component when path matches '/order/:orderId'
+        errorElement: <Error />,
+        loader: orderLoader,
       },
     ],
   },
