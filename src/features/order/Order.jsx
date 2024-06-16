@@ -1,18 +1,47 @@
 import React from 'react';
 import { getOrder } from '../../services/apiRestaurant';
 import { useLoaderData } from 'react-router-dom';
+import styled from 'styled-components';
+import { calcMinutesLeft, formatCurrency, formatDate } from '../../utils/helpers';
+import OrderItem from './OrderItem';
 
 // This component fetches and displays the details of a specific order.
 function Order() {
   // It uses the useLoaderData hook to retrieve the order data loaded by the loader function.
   const order = useLoaderData();
+
+  const { cart, customer, id, orderPrice, priority, priorityPrice, status, estimatedDelivery } = order;
+
+  const deliveryIn = calcMinutesLeft(estimatedDelivery);
   console.log(order);
   return (
-    <div>
-      <div>
-        <h2>Status</h2>
-      </div>
-    </div>
+    <Wrapper>
+      <OrderStatus>
+        <h2>Order# {id} status</h2>
+        <div>
+          {priority && <Priority>Priority</Priority>} <DeliveredOrderStatus>{status} order</DeliveredOrderStatus>
+        </div>
+      </OrderStatus>
+
+      <DeliveryStatus>
+        <p>
+          {deliveryIn >= 0 ? `Only ${calcMinutesLeft(estimatedDelivery)} minutes left 😀` : 'Order should have arrived'}
+        </p>
+        <p>Estimated Delivery: {formatDate(estimatedDelivery)}</p>
+      </DeliveryStatus>
+
+      <OrderedList>
+        {cart.map(item => (
+          <OrderItem item={item} key={item.id} />
+        ))}
+      </OrderedList>
+
+      <TotalPriceWrapper>
+        <p>Price pizza: {formatCurrency(orderPrice)}</p>
+        {priority && <p>Price Priority{formatCurrency(priorityPrice)}</p>}
+        <PayOnDelivery>To pay on delivery: {formatCurrency(orderPrice + priorityPrice)}</PayOnDelivery>
+      </TotalPriceWrapper>
+    </Wrapper>
   );
 }
 
@@ -24,3 +53,47 @@ export async function loader({ params }) {
   const order = await getOrder(params.orderId);
   return order;
 }
+
+const Wrapper = styled.div`
+  padding: 2rem 1rem;
+`;
+
+const OrderStatus = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+`;
+
+const Priority = styled.span`
+  font-size: 12px;
+  padding: 4px 16px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  color: #fef2f2;
+  background-color: #ef4444;
+`;
+
+const DeliveredOrderStatus = styled(Priority)`
+  background-color: #22c55e;
+`;
+
+const DeliveryStatus = styled.div`
+  background-color: #fef2f2;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+`;
+
+const OrderedList = styled.ul`
+  padding: 1rem;
+`;
+
+const TotalPriceWrapper = styled(DeliveryStatus)`
+  background-color: #f8d3d3;
+`;
+
+const PayOnDelivery = styled.p`
+  font-weight: 600;
+`;
