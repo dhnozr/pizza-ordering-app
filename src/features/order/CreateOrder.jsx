@@ -1,6 +1,8 @@
 import React from 'react';
 import { Form, redirect, useActionData, useNavigation } from 'react-router-dom';
 import { createOrder } from '../../services/apiRestaurant';
+import styled from 'styled-components';
+import Button from '../ui/Button';
 
 // Function to validate phone numbers using regex
 // https://uibakery.io/regex-library/phone-number
@@ -45,7 +47,7 @@ function CreateOrder() {
 
   return (
     // The Form component from react-router-dom. This component handles the form submission by sending a POST request.
-    <div>
+    <Wrapper>
       {/* <Form method='POST' action='/order/new'></Form> */}
       <Form method='POST'>
         <div>
@@ -61,31 +63,31 @@ function CreateOrder() {
             <input type='tel' name='phone' required />
           </label>
           {/* Display the phone error message if it exists */}
-          {formErrors?.phone && <p>{formErrors.phone}</p>}
+          {formErrors?.phone && <ErrorMessage>{formErrors.phone}</ErrorMessage>}
         </div>
         {/*  */}
 
-        <div>
+        <Address>
           <label>
             address
             <input type='text' name='address' required />
           </label>
-        </div>
+        </Address>
         {/*  */}
-        <div>
+        <CheckBox>
           <label>
-            give priority
             <input type='checkbox' name='priority' />
+            give priority
           </label>
-        </div>
+        </CheckBox>
         {/*  */}
         <div>
           {/* Hidden input to send cart data as a JSON string */}
           <input type='hidden' name='cart' value={JSON.stringify(cart)} />
-          <button disabled={isSubmitting}>{isSubmitting ? 'Placing order...' : 'order now'}</button>
+          <Button disabled={isSubmitting}>{isSubmitting ? 'Placing order...' : 'order now'}</Button>
         </div>
       </Form>
-    </div>
+    </Wrapper>
   );
 }
 
@@ -120,3 +122,62 @@ export async function action({ request }) {
   // Redirect the user to the new order's detail page
   return redirect(`/order/${newOrder.id}`);
 }
+
+// Styles
+
+const Wrapper = styled.div`
+  padding: 1rem;
+
+  div {
+    margin-bottom: 1rem;
+  }
+
+  label {
+    text-transform: uppercase;
+    display: flex;
+
+    justify-content: space-between;
+    flex-direction: column;
+    font-size: 14px;
+    gap: 8px;
+  }
+  input {
+    width: 100%;
+    border-radius: 100px;
+    padding: 6px;
+    border: none;
+    outline: 1px solid #e7e5e4;
+
+    ::placeholder {
+      color: #a8a29e;
+    }
+  }
+`;
+
+const ErrorMessage = styled.p`
+  font-size: 12px;
+  margin-top: 10px;
+  color: red;
+  background-color: #fee2e2;
+  border-radius: 12px;
+  padding: 10px 3px;
+`;
+
+const Address = styled.div``;
+
+const CheckBox = styled.div`
+  label {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+
+    input {
+      width: fit-content;
+      outline: none;
+      width: 15px;
+      height: 15px;
+    }
+  }
+`;
