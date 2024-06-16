@@ -13,6 +13,7 @@ export const GlobalStyle = createGlobalStyle`
 */
 * {
   margin: 0;
+  color: inherit;
 }
 /*
   Typographic tweaks!
@@ -22,6 +23,7 @@ export const GlobalStyle = createGlobalStyle`
 body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  font-family: "Inter",sans-serif;
 }
 /*
   5. Improve media defaults
