@@ -2,9 +2,24 @@ import React from 'react';
 import { formatCurrency } from '../../utils/helpers';
 import styled from 'styled-components';
 import Button from '../ui/Button';
+import { useDispatch } from 'react-redux';
+import { addItem } from '../cart/cartSlice';
 
 function MenuItem({ pizza }) {
   const { id, name, unitPrice, ingredients, soldOut, imageUrl } = pizza;
+
+  const dispatch = useDispatch();
+
+  function handleAddToCart() {
+    const newPizza = {
+      pizzaId: id,
+      name,
+      unitPrice,
+      quantity: 1,
+    };
+
+    dispatch(addItem(newPizza));
+  }
   return (
     <ListItem $soldOut={soldOut}>
       <Image src={imageUrl} alt='' />
@@ -13,7 +28,11 @@ function MenuItem({ pizza }) {
         <Ingredients>{ingredients.join(', ')}</Ingredients>
         <Price>
           {!soldOut ? <p>{formatCurrency(unitPrice)}</p> : <p>Sold out</p>}
-          <Button type='small'>Add to cart</Button>
+          {!soldOut && (
+            <Button onClick={handleAddToCart} type='small'>
+              Add to cart
+            </Button>
+          )}
         </Price>
       </BottomInfo>
     </ListItem>

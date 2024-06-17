@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-function Button({ children, disabled, as, to, type, secondary }) {
+function Button({ children, disabled, as, to, type, secondary, onClick }) {
   return (
-    <Btn disabled={disabled} as={as} to={to} type={type} secondary={secondary}>
+    <Btn disabled={disabled} as={as} to={to} type={type} secondary={secondary} onClick={onClick}>
       {children}
     </Btn>
   );
