@@ -37,4 +37,8 @@ const Main = styled.main`
   margin: auto;
   width: 100%;
   height: 100%;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;

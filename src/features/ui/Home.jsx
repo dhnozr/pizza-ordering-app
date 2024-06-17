@@ -1,8 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import CreateUser from '../user/CreateUser';
+import { useSelector } from 'react-redux';
+import { getUsername } from '../user/userSlice';
+import Button from './Button';
+import { Link } from 'react-router-dom';
 
 function Home() {
+  const username = useSelector(getUsername);
   return (
     <Wrapper>
       <Title>
@@ -10,8 +15,13 @@ function Home() {
         <br />
         Straight out of the owen, straight to you.
       </Title>
-
-      <CreateUser />
+      {username === '' ? (
+        <CreateUser />
+      ) : (
+        <Button to='/menu' as={Link}>
+          Continue ordering, {username}
+        </Button>
+      )}
     </Wrapper>
   );
 }

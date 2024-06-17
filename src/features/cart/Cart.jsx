@@ -4,6 +4,8 @@ import LinkButton from '../ui/LinkButton';
 import Button from '../ui/Button';
 import { Link } from 'react-router-dom';
 import CartItem from './CartItem';
+import { useSelector } from 'react-redux';
+import { getUsername } from '../user/userSlice';
 
 // Temporary fake cart data for demonstration purposes
 const fakeCart = [
@@ -32,10 +34,11 @@ const fakeCart = [
 
 function Cart() {
   const cart = fakeCart;
+  const username = useSelector(getUsername);
   return (
     <Wrapper>
       <LinkButton to='/menu'>&larr; Back to menu</LinkButton>
-      <h2>Your cart,name</h2>
+      <h2>Your cart, {username}</h2>
 
       <CartList>
         {cart.map(item => (
@@ -43,7 +46,7 @@ function Cart() {
         ))}
       </CartList>
       <Bottom>
-        <Button as={Link} to='/menu'>
+        <Button as={Link} to='/order/new'>
           Order Pizzas
         </Button>
         <Button secondary={true}>Clear Cart</Button>

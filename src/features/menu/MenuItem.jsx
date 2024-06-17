@@ -6,12 +6,12 @@ import Button from '../ui/Button';
 function MenuItem({ pizza }) {
   const { id, name, unitPrice, ingredients, soldOut, imageUrl } = pizza;
   return (
-    <ListItem soldOut={soldOut}>
+    <ListItem $soldOut={soldOut}>
       <Image src={imageUrl} alt='' />
       <BottomInfo>
         <Name>{name}</Name>
         <Ingredients>{ingredients.join(', ')}</Ingredients>
-        <Price soldOut={soldOut}>
+        <Price>
           {!soldOut ? <p>{formatCurrency(unitPrice)}</p> : <p>Sold out</p>}
           <Button type='small'>Add to cart</Button>
         </Price>
@@ -28,8 +28,8 @@ const ListItem = styled.li`
   border-bottom: 1px solid #e7e5e4;
   padding-bottom: 8px;
 
-  opacity: ${props => (props.soldOut ? '0.6' : null)};
-  filter: ${props => (props.soldOut ? 'grayscale(1)' : null)};
+  opacity: ${props => (props.$soldOut ? '0.6' : null)};
+  filter: ${props => (props.$soldOut ? 'grayscale(1)' : null)};
 `;
 
 const Image = styled.img`

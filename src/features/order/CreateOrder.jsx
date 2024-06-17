@@ -3,6 +3,8 @@ import { Form, redirect, useActionData, useNavigation } from 'react-router-dom';
 import { createOrder } from '../../services/apiRestaurant';
 import styled from 'styled-components';
 import Button from '../ui/Button';
+import { useSelector } from 'react-redux';
+import { getUsername } from '../user/userSlice';
 
 // Function to validate phone numbers using regex
 // https://uibakery.io/regex-library/phone-number
@@ -37,6 +39,7 @@ const fakeCart = [
 // It uses the react-router-dom Form component to handle form submission.
 function CreateOrder() {
   const navigation = useNavigation();
+  const username = useSelector(getUsername);
 
   // useActionData is a hook provided by react-router-dom that allows components to access the data returned by an action function.
   // In this context, we use useActionData to get the validation errors returned by the action function and display them in the form.
@@ -53,7 +56,7 @@ function CreateOrder() {
         <div>
           <label>
             name
-            <input type='text' name='customer' required />
+            <input type='text' name='customer' required defaultValue={username} />
           </label>
         </div>
         {/*  */}
