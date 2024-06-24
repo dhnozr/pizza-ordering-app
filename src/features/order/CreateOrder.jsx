@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, redirect, useActionData, useNavigation } from 'react-router-dom';
 import { createOrder } from '../../services/apiRestaurant';
 import styled from 'styled-components';
 import Button from '../ui/Button';
 import { useSelector } from 'react-redux';
 import { getUsername } from '../user/userSlice';
+import { clearCart, getCart, getTotalCartPrice } from '../cart/cartSlice';
+import EmptyCart from '../cart/EmptyCart';
+import store from '../../store';
+import { formatCurrency } from '../../utils/helpers';
 
 // Function to validate phone numbers using regex
 // https://uibakery.io/regex-library/phone-number
@@ -38,16 +42,23 @@ const fakeCart = [
 // This component renders a form to create a new order.
 // It uses the react-router-dom Form component to handle form submission.
 function CreateOrder() {
+  const [priority, setPriority] = useState(false);
   const navigation = useNavigation();
   const username = useSelector(getUsername);
+  const totalCartPrice = useSelector(getTotalCartPrice);
+  const priorityPrice = priority ? totalCartPrice * 0.2 : 0;
+  const totalPrice = totalCartPrice + priorityPrice;
 
   // useActionData is a hook provided by react-router-dom that allows components to access the data returned by an action function.
   // In this context, we use useActionData to get the validation errors returned by the action function and display them in the form.
   const formErrors = useActionData(); // This hook allows us to access the data returned from the action function
 
   const isSubmitting = navigation.state === 'submitting';
-  const cart = fakeCart;
 
+  // Take cart from store
+  const cart = useSelector(getCart);
+  // If cart is empty return EmptyCart component
+  if (!cart.length) return <EmptyCart />;
   return (
     // The Form component from react-router-dom. This component handles the form submission by sending a POST request.
     <Wrapper>
@@ -79,7 +90,7 @@ function CreateOrder() {
         {/*  */}
         <CheckBox>
           <label>
-            <input type='checkbox' name='priority' />
+            <input type='checkbox' name='priority' value={priority} onChange={e => setPriority(e.target.checked)} />
             give priority
           </label>
         </CheckBox>
@@ -87,7 +98,9 @@ function CreateOrder() {
         <div>
           {/* Hidden input to send cart data as a JSON string */}
           <input type='hidden' name='cart' value={JSON.stringify(cart)} />
-          <Button disabled={isSubmitting}>{isSubmitting ? 'Placing order...' : 'order now'}</Button>
+          <Button disabled={isSubmitting}>
+            {isSubmitting ? 'Placing order...' : `order now from ${formatCurrency(totalPrice)}`}
+          </Button>
         </div>
       </Form>
     </Wrapper>
@@ -104,7 +117,7 @@ export async function action({ request }) {
   // Convert the form data to a plain object
   const data = Object.fromEntries(formData);
   // Parse the cart and priority fields
-  const order = { ...data, cart: JSON.parse(data.cart), priority: data.priority === 'on' };
+  const order = { ...data, cart: JSON.parse(data.cart), priority: data.priority === 'true' };
   console.log(order);
 
   // Initialize an empty object to hold any validation errors
@@ -121,6 +134,9 @@ export async function action({ request }) {
   // Send the order data to the server to create a new order
   // The server returns the newly created order object
   const newOrder = await createOrder(order);
+
+  // Do not overuse
+  store.dispatch(clearCart());
 
   // Redirect the user to the new order's detail page
   return redirect(`/order/${newOrder.id}`);
