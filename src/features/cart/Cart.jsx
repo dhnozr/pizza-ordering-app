@@ -2,10 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import LinkButton from '../ui/LinkButton';
 import Button from '../ui/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CartItem from './CartItem';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUsername } from '../user/userSlice';
+import { clearCart, getCart } from './cartSlice';
+import EmptyCart from './EmptyCart';
 
 // Temporary fake cart data for demonstration purposes
 const fakeCart = [
@@ -33,8 +35,15 @@ const fakeCart = [
 ];
 
 function Cart() {
-  const cart = fakeCart;
+  const cart = useSelector(getCart);
   const username = useSelector(getUsername);
+  const dispatch = useDispatch();
+
+  function handleClearCart() {
+    dispatch(clearCart());
+  }
+
+  if (!cart.length) return <EmptyCart />;
   return (
     <Wrapper>
       <LinkButton to='/menu'>&larr; Back to menu</LinkButton>
@@ -49,7 +58,9 @@ function Cart() {
         <Button as={Link} to='/order/new'>
           Order Pizzas
         </Button>
-        <Button secondary={true}>Clear Cart</Button>
+        <Button $secondary={'true'} onClick={handleClearCart}>
+          Clear Cart
+        </Button>
       </Bottom>
     </Wrapper>
   );
