@@ -2,9 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 import { formatCurrency } from '../../utils/helpers';
 import Button from '../ui/Button';
+import DeleteItem from './DeleteItem';
+import UpdateItemQuantity from './UpdateItemQuantity';
+import { useSelector } from 'react-redux';
+import { getQuantityById } from './cartSlice';
 
 export default function CartItem({ item }) {
-  const { pizzaId, name, quantity, unitPrice, totalPrice } = item;
+  const { pizzaId, name, quantity, unitPrice } = item;
+  const totalPrice = quantity * unitPrice;
+  const currentQuantity = useSelector(getQuantityById(pizzaId));
   return (
     <Wrappper>
       <p>
@@ -12,7 +18,8 @@ export default function CartItem({ item }) {
       </p>
       <PriceInfo>
         <p>{formatCurrency(totalPrice)}</p>
-        <Button type='small'>Delete</Button>
+        <UpdateItemQuantity pizzaId={pizzaId} currentQuantity={currentQuantity} />
+        <DeleteItem pizzaId={pizzaId} />
       </PriceInfo>
     </Wrappper>
   );
