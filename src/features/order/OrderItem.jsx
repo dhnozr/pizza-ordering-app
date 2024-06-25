@@ -2,7 +2,7 @@ import React from 'react';
 import { formatCurrency } from '../../utils/helpers';
 import styled from 'styled-components';
 
-function OrderItem({ item }) {
+function OrderItem({ item, ingredients, isLoadingIngredients }) {
   const { quantity, name, totalPrice } = item;
   return (
     <ListItem>
@@ -14,6 +14,7 @@ function OrderItem({ item }) {
         </p>
         <p>{formatCurrency(totalPrice)}</p>
       </Wrapper>
+      <Ingredients>{isLoadingIngredients ? 'Loading' : ingredients?.join(', ')}</Ingredients>
     </ListItem>
   );
 }
@@ -35,4 +36,9 @@ const Wrapper = styled.div`
 
 const Name = styled.span`
   font-weight: 600;
+`;
+
+const Ingredients = styled.p`
+  font-style: italic;
+  color: #78716c;
 `;
