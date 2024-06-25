@@ -2,6 +2,9 @@
 
 Welcome to the Pizza Ordering App! This project is a web-based application designed for ordering pizzas online. It provides a seamless user experience, from selecting pizzas to adding them to the cart and placing an order. The app is built with modern web technologies and follows best practices for front-end development.
 
+## Video
+https://github.com/dhnozr/pizza-ordering-app/assets/115792609/10a46e46-8580-42f7-a292-14c31da0064e
+
 ## Features
 
 - Menu Display: View available pizzas with details such as name, ingredients, and price.
