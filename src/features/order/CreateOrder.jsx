@@ -3,8 +3,8 @@ import { Form, redirect, useActionData, useNavigation } from 'react-router-dom';
 import { createOrder } from '../../services/apiRestaurant';
 import styled from 'styled-components';
 import Button from '../ui/Button';
-import { useSelector } from 'react-redux';
-import { getUsername } from '../user/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAddress, getUser, getUsername } from '../user/userSlice';
 import { clearCart, getCart, getTotalCartPrice } from '../cart/cartSlice';
 import EmptyCart from '../cart/EmptyCart';
 import store from '../../store';
@@ -44,10 +44,15 @@ const fakeCart = [
 function CreateOrder() {
   const [priority, setPriority] = useState(false);
   const navigation = useNavigation();
-  const username = useSelector(getUsername);
+
   const totalCartPrice = useSelector(getTotalCartPrice);
   const priorityPrice = priority ? totalCartPrice * 0.2 : 0;
   const totalPrice = totalCartPrice + priorityPrice;
+
+  const dispatch = useDispatch();
+
+  const { username, status: addressStatus, position, address, error: errorAddress } = useSelector(getUser);
+  const isLoadingAddress = addressStatus === 'loading';
 
   // useActionData is a hook provided by react-router-dom that allows components to access the data returned by an action function.
   // In this context, we use useActionData to get the validation errors returned by the action function and display them in the form.
@@ -84,9 +89,19 @@ function CreateOrder() {
         <Address>
           <label>
             address
-            <input type='text' name='address' required />
+            <input type='text' name='address' required disabled={isLoadingAddress} defaultValue={address} />
           </label>
+          <AddressBtn
+            disabled={isLoadingAddress || isSubmitting}
+            onClick={e => {
+              e.preventDefault();
+              dispatch(fetchAddress());
+            }}
+          >
+            Get Position
+          </AddressBtn>
         </Address>
+        {addressStatus === 'error' && <ErrorMessage>{errorAddress}</ErrorMessage>}
         {/*  */}
         <CheckBox>
           <label>
@@ -98,6 +113,11 @@ function CreateOrder() {
         <div>
           {/* Hidden input to send cart data as a JSON string */}
           <input type='hidden' name='cart' value={JSON.stringify(cart)} />
+          <input
+            type='hidden'
+            name='position'
+            value={position.longitude && position.latutide ? `${position.latitude},${position.longitude}` : ''}
+          />
           <Button disabled={isSubmitting}>
             {isSubmitting ? 'Placing order...' : `order now from ${formatCurrency(totalPrice)}`}
           </Button>
@@ -182,7 +202,26 @@ const ErrorMessage = styled.p`
   padding: 10px 3px;
 `;
 
-const Address = styled.div``;
+const Address = styled.div`
+  position: relative;
+`;
+
+const AddressBtn = styled.button`
+  position: absolute;
+  right: 2px;
+  bottom: 2.5px;
+  display: inline-block;
+  border: none;
+  background-color: #facc15;
+  text-transform: uppercase;
+  color: #292524;
+  padding: 3px 12px;
+  font-weight: 400;
+  border-radius: 100px;
+  transition: all 0.3s linear;
+  text-decoration: none;
+  font-size: 14px;
+`;
 
 const CheckBox = styled.div`
   label {
