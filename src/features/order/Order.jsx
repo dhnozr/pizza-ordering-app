@@ -23,7 +23,7 @@ function Order() {
   return (
     <Wrapper>
       <OrderStatus>
-        <h2>Order# {id} status</h2>
+        <h2>Order {id} status</h2>
         <div>
           {priority && <Priority>Priority</Priority>} <DeliveredOrderStatus>{status} order</DeliveredOrderStatus>
         </div>
